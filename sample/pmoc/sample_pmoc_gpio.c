@@ -220,7 +220,7 @@ HI_S32  main(HI_S32 argc,HI_CHAR *argv[])
                "       IR Type: 0:nec simple; 1:tc9012; 2:nec full; 3:sony_12bit; 4:raw.\n"
                "       Keyled Type: 0: 74hc164; 1: pt6961; 2: ct1642; 3: pt6964; 4: fd650. \n"
                "       Eth & USB Type: 0: Disable; 1: USB Wakeup; 2: Single packet; 3: Magic Packet; 4: Frame Filter. \n"
-               "       GPIO Type: 0: spring by the low level; 1: spring by the high level. \n",
+               "       GPIO Type: 0: Enable; 1: Enable\n",
                 argv[0]);
         printf("Example: %s 0 2 1 0 0 2 0 0\n", argv[0]);
         return HI_FAILURE;
@@ -295,6 +295,7 @@ HI_S32  main(HI_S32 argc,HI_CHAR *argv[])
         devType.kltype = HI_UNF_KEYLED_TYPE_74HC164;
     }
 
+#if 0
 	if (g_GpioType == 1)
 	{
         /**<spring by the high level*/			  /**< CNcomment:高电平触发*/
@@ -305,7 +306,7 @@ HI_S32  main(HI_S32 argc,HI_CHAR *argv[])
         /**<spring by the low level*/				 /**< CNcomment:低电平触发*/
 		devType.gptype = HI_UNF_GPIO_INTTYPE_LOW; 
     }
-	
+#endif	
     ret = HI_UNF_PMOC_SetDevType(&devType);
     if (HI_SUCCESS != ret)
     {
@@ -458,7 +459,7 @@ HI_S32  main(HI_S32 argc,HI_CHAR *argv[])
         }
         
     }
-	if (devType.gptype == HI_UNF_GPIO_INTTYPE_HIGH || devType.gptype == HI_UNF_GPIO_INTTYPE_LOW)
+//	if (devType.gptype == HI_UNF_GPIO_INTTYPE_HIGH || devType.gptype == HI_UNF_GPIO_INTTYPE_LOW)
 	{
 		wakeup.bGpioWakeUpEnable = HI_TRUE;
 		wakeup.u32GpioNo = 43; //GPIO5_3
