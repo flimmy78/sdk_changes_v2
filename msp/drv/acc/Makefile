@@ -1,6 +1,6 @@
 MOD_NAME=acc_mod
 
-obj-y    := $(MOD_NAME).o
+obj-m    := $(MOD_NAME).o
 $(MOD_NAME)-objs := check_acc.o
 
 EXTRA_CFLAGS += -I$(COMMON_UNF_INCLUDE)                 \
