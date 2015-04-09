@@ -34,13 +34,13 @@ static unsigned int set_gpio_value(unsigned int reg, int gpio, int val)
 	unsigned int regval;
 	
 	regval = readl(IO_ADDRESS(reg));
-	printk("read 0xF80043fc: 0x%08x\n", regval);
+	//printk("read 0xF80043fc: 0x%08x\n", regval);
 	
 	regval = (regval & (0x0 << gpio));
-	printk("gpio5_%d=%d\n", gpio, regval);
+	//printk("gpio5_%d=%d\n", gpio, regval);
 	
 	regval = (regval | (val << gpio));
-	printk("gpio5_%d=%d\n", gpio, regval);
+	//printk("gpio5_%d=%d\n", gpio, regval);
 	writel(regval, IO_ADDRESS(reg));
 }
 
@@ -49,10 +49,10 @@ static unsigned int get_gpio_value(unsigned int reg, int gpio)
 	unsigned int regval;
 
 	regval = readl(IO_ADDRESS(reg));
-	printk("read 0xF80043fc: 0x%08x\n", regval);
+	//printk("read 0xF80043fc: 0x%08x\n", regval);
 
 	regval = ((regval >> gpio) & 0x1);
-	printk("gpio5_%d=%d\n", gpio, regval);
+	//printk("gpio5_%d=%d\n", gpio, regval);
 	
 	return regval;
 }
