@@ -18,6 +18,7 @@ PHONY: help
 .PHONY: build rebuild
 #++++++++++++++++++++++++++++++++++++++++++++++++++++
 build: prepare install
+	find $(PUB_DIR) -name .gitkeep | xargs rm -f
 rebuild: distclean build
 
 #====================================================================================
