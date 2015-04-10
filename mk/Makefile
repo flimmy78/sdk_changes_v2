@@ -127,6 +127,7 @@ hiboot_clean:
 	make -C $(BOOT_DIR) clean
 hiboot_install:
 	make -C $(BOOT_DIR) install
+#AUTELAN	
 hiboot_uninstall:
 	make -C $(BOOT_DIR) uninstall
 
@@ -369,7 +370,8 @@ extfs:
 	) else ( \
 		echo "EMMC_SIZE_STR=${EMMC_SIZE_STR}"; \
 		${MKEXT4FS} -l ${EMMC_SIZE_STR} -s $(IMAGE_DIR)/rootfs_$(EMMC_SIZE_STR).ext4 $(ROOTBOX_DIR); \
-		${MKEXT4FS} -l 3000M -s $(IMAGE_DIR)/rootfs_data_3000M.ext4 $(ROOTFS_DATA_DIR) \
+		${MKEXT4FS} -l  32M -s $(IMAGE_DIR)/rootfs_config_32M.ext4 $(ROOTFS_CONFIG_DIR); \
+		${MKEXT4FS} -l 820M -s $(IMAGE_DIR)/rootfs_data_820M.ext4  $(ROOTFS_DATA_DIR) \
 	) fi )
 
 #====================================================================================

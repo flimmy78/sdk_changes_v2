@@ -97,23 +97,6 @@
 #endif
 
 env_t environment __PPCENV__ = {
-#ifdef AUTELAN
-    {
-        [0 ... (AT_ENV_COUNT-1)] = "\0",
-        
-        [AT_ENV_INIT]       = AT_DEFT_INIT,
-        [AT_ENV_BOOTVER]    = AT_DEFT_BOOTVER,
-        [AT_ENV_ROOTFS]     = AT_DEFT_ROOTFS,
-        
-        [AT_ENV_ROOTFS0]    = AT_DEFT_ROOTFS0,
-        [AT_ENV_ROOTFS1]    = AT_DEFT_ROOTFS1,
-        [AT_ENV_ROOTFS2]    = AT_DEFT_ROOTFS2,
-        
-        [AT_ENV_ROOTFS0ERR] = AT_DEFT_ROOTFS0ERR,
-        [AT_ENV_ROOTFS1ERR] = AT_DEFT_ROOTFS1ERR,
-        [AT_ENV_ROOTFS2ERR] = AT_DEFT_ROOTFS2ERR,
-    },
-#endif
 	ENV_CRC,	/* CRC Sum */
 #ifdef CONFIG_SYS_REDUNDAND_ENVIRONMENT
 	1,		/* Flags: valid */

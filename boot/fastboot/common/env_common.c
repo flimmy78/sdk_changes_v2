@@ -29,9 +29,6 @@
 #include <environment.h>
 #include <linux/stddef.h>
 #include <malloc.h>
-#ifdef AUTELAN
-#include <mmc.h>
-#endif
 DECLARE_GLOBAL_DATA_PTR;
 
 #ifdef CONFIG_AMIGAONEG3SE
@@ -66,42 +63,7 @@ uchar default_environment[] = {
 #else
 
 #ifdef AUTELAN
-#ifdef CONFIG_BOOTARGS
-#undef CONFIG_BOOTARGS
-#endif
-#define CONFIG_BOOTARGS         \
-    "mem=2G"                    \
-        " "                     \
-    "console=ttyAMA0,115200"    \
-        " "                     \
-    "root=/dev/mmcblk0p8"       \
-        " "                     \
-    "rootfstype=ext4"           \
-        " "                     \
-    "rootwait"                  \
-        " "                     \
-    "ro"                        \
-        " "                     \
-    "blkdevparts="              \
-        "mmcblk0:"              \
-        "512K(boot),"           \
-        "512K(argv),"           \
-        "4M(baseparam),"        \
-        "4M(pqparam),"          \
-        "4M(logo),"             \
-        "8M(kernel),"           \
-        "200M(rootfs0),"        \
-        "200M(rootfs1),"        \
-        "200M(rootfs2),"        \
-        "3000M(rootfs_data),"   \
-        "-(others)"             \
-        " "                     \
-    "mmz=ddr,0,0,300M"
-
-#ifdef CONFIG_BOOTCOMMAND
-#undef CONFIG_BOOTCOMMAND
-#endif
-#define CONFIG_BOOTCOMMAND "mmc read 0 0x1000000 0x6800 0x4000;bootm 0x1000000"
+#include "atenv/atenv.c"
 #endif
 
 uchar default_environment[] = {
@@ -263,7 +225,13 @@ void set_default_env(void)
 		return;
 	}
 
+#ifdef AUTELAN
+    bootenv_dirty = true;
+    
+    memset(env_ptr->data, 0, sizeof(env_t) - offsetof(env_t, data));
+#else
 	memset(env_ptr, 0, sizeof(env_t));
+#endif
 	memcpy(env_ptr->data, default_environment,
 	       sizeof(default_environment));
 #ifdef CONFIG_SYS_REDUNDAND_ENVIRONMENT
@@ -279,418 +247,6 @@ void set_default_env(void)
 	gd->env_valid = 1;
 }
 
-#ifdef AUTELAN
-
-static char *
-get_first_env(void)
-{
-    char *first = (char *)env_ptr->data;
-
-    if (first[0]) {
-//        println("get first env:%s", first);
-        
-        return first;
-    } else {
-        println("no found first env");
-        
-        return NULL;
-    }
-}
-
-static char *
-get_next_env(char *env)
-{
-    int len = strlen(env);
-    char *next = env + len + 1; /* skip '\0' */
-
-    if (next[0]) {
-//        println("get next env:%s", next);
-        
-        return next;
-    } else {
-//        println("no found next env");
-        
-        return NULL;
-    }
-}
-
-static char *
-get_env_byname(char *name)
-{
-    char *env = get_first_env();
-
-    while(env) {
-        if (0==memcmp(env, name, strlen(name))) {
-            return env;
-        }
-        
-        env = get_next_env(env);
-    }
-
-    println("no found env:%s", name);
-    
-    return NULL;    
-}
-
-static int 
-read_emmc(unsigned int begin, void *buf, int size)
-{
-    struct mmc *mmc = find_mmc_device(0);
-    int ret;
-
-    if (!mmc) {
-        println("init mmc error");
-        return -1;
-    }
-
-    ret = mmc->block_dev.block_read(0, begin >> 9,
-        size >> 9, buf);
-    if (ret != (size >> 9)){
-        println("read emmc error, begin:0x%x, size:0x%x", begin, size);
-        return -1;
-    }
-
-    return ret << 9;
-}
-
-static int 
-write_emmc(unsigned int begin, void *buf, int size)
-{
-    struct mmc *mmc = find_mmc_device(0);
-    int ret;
-
-    if (!mmc) {
-        println("init mmc error");
-        return -1;
-    }
-
-    ret = mmc->block_dev.block_write(0, begin >> 9,
-        size >> 9, buf);
-    if (ret != (size >> 9)) {
-        println("write emmc error, begin:0x%x, size:0x%x", begin, size);
-        return -1;
-    }
-    
-    return ret << 9;
-}
-
-static char *
-change_bootargs(int rootfs)
-{
-    char *env, *root, *mmcblk;
-    
-    rootfs += AT_ROOTFS_BASE;
-    env = get_env_byname("bootargs");
-    if (NULL==env) {
-        return NULL;
-    }
-    
-#define BOOTARGS_ROOT "root=/dev/mmcblk0p"
-    root = strstr(env, BOOTARGS_ROOT);
-    if (NULL==root) {
-        return NULL;
-    }
-    
-    mmcblk = root + strlen(BOOTARGS_ROOT);
-    if (*mmcblk != rootfs) {
-        println("rootfs changed from %c to %c", *mmcblk, rootfs);
-        *mmcblk = rootfs;
-    }
-    
-    return env;
-}
-
-#define ATENV(x)        ((char *)env_ptr->atenv[x])
-#define ATENV_0(x)      ATENV(x)[0]
-
-static inline int 
-get_rootfs_current(void)
-{
-    return ATENV_0(AT_ENV_ROOTFS) - '0';
-}
-
-static inline void 
-set_rootfs_current(int rootfs)
-{
-    ATENV_0(AT_ENV_ROOTFS) = '0' + rootfs;
-}
-
-static inline int
-get_rootfs_buddy(int rootfs)
-{
-    switch(rootfs) {
-    case 1:
-        return 2;
-    case 2:
-        return 1;
-    default:
-        return 1;
-    }
-}
-
-static inline int
-get_rootfs_state(int rootfs)
-{
-    switch(rootfs) {
-    case 1:
-        return ATENV_0(AT_ENV_ROOTFS1);
-    case 2:
-        return ATENV_0(AT_ENV_ROOTFS2);
-    case 0: /* down */
-    default:
-        /*
-        * rootfs0's state is ok
-        */
-        return AT_ROOTFS_OK;
-    }
-}
-
-static inline void
-set_rootfs_state(int rootfs, int state)
-{
-    switch(rootfs) {
-    case 1:
-        ATENV_0(AT_ENV_ROOTFS1) = state;
-        break;
-    case 2:
-        ATENV_0(AT_ENV_ROOTFS2) = state;
-        break;
-    default:
-        break;
-    }
-}
-
-
-static inline void
-set_rootfs_error(int rootfs, int error)
-{
-    switch(rootfs) {
-    case 1:
-        ATENV_0(AT_ENV_ROOTFS1ERR) = error + '0';
-    
-        break;
-    case 2:
-        ATENV_0(AT_ENV_ROOTFS2ERR) = error + '0';
-    
-        break;
-    default:
-        println("rootfs0 error allways 0");
-        
-        break;
-    }
-}
-
-static inline int
-get_rootfs_error(int rootfs)
-{
-    int error;
-    
-    switch(rootfs) {
-    case 1:
-        error = ATENV_0(AT_ENV_ROOTFS1ERR) - '0';
-        
-        break;
-    case 2:
-        error = ATENV_0(AT_ENV_ROOTFS2ERR) - '0';
-        
-        break;
-    default:
-        return 0;
-    }
-    
-    if (error<0) {
-        println("rootfs%d error(%d) < 0, reset to 0", 
-            rootfs, 
-            error);
-
-        set_rootfs_error(rootfs, 0);
-        
-        return 0;
-    }
-
-    return error;
-}
-
-static inline int
-add_rootfs_error(int rootfs)
-{
-    int error = get_rootfs_error(rootfs) + 1;
-
-    set_rootfs_error(rootfs, error);
-
-    println("add rootfs%d error from %d to %d", 
-        rootfs, 
-        error - 1, 
-        error);
-    
-    return error;
-}
-
-
-#define ROOTFS_DUMP(_name) \
-    println(#_name ":%c", ATENV_0(_name))
-
-static void 
-rootfs_dump(void) 
-{
-    
-    println("=======rootfs dump begin==========");
-    println("AT_ENV_INIT:%s", ATENV(AT_ENV_INIT));
-    ROOTFS_DUMP(AT_ENV_ROOTFS);
-    ROOTFS_DUMP(AT_ENV_ROOTFS1);
-    ROOTFS_DUMP(AT_ENV_ROOTFS1ERR);
-    ROOTFS_DUMP(AT_ENV_ROOTFS2);
-    ROOTFS_DUMP(AT_ENV_ROOTFS2ERR);
-    println("=======rootfs dump end============");
-}
-
-#define atenv_init(idx, deft) do{ \
-    memset(ATENV(idx), 0, AT_ENV_LINE_SIZE); \
-    strcpy(ATENV(idx), deft); \
-    println(#idx " init to %s", deft); \
-}while(0)
-
-static void 
-rootfs_init(void) 
-{
-    atenv_init(AT_ENV_INIT,         AT_DEFT_INIT);
-    atenv_init(AT_ENV_BOOTVER,      AT_DEFT_BOOTVER);
-    atenv_init(AT_ENV_ROOTFS,       AT_DEFT_ROOTFS);
-    
-    atenv_init(AT_ENV_ROOTFS0,      AT_DEFT_ROOTFS0);
-    atenv_init(AT_ENV_ROOTFS1,      AT_DEFT_ROOTFS1);
-    atenv_init(AT_ENV_ROOTFS2,      AT_DEFT_ROOTFS2);
-    
-    atenv_init(AT_ENV_ROOTFS0ERR,   AT_DEFT_ROOTFS0ERR);
-    atenv_init(AT_ENV_ROOTFS1ERR,   AT_DEFT_ROOTFS1ERR);
-    atenv_init(AT_ENV_ROOTFS2ERR,   AT_DEFT_ROOTFS2ERR);
-}
-
-static void 
-rootfs_try_init(void) 
-{
-    rootfs_dump();
-    
-    if (0!=memcmp(ATENV(AT_ENV_INIT), AT_DEFT_INIT, strlen(AT_DEFT_INIT))) {
-        println("atenv need to init...");
-
-        rootfs_init();
-    }
-}
-
-static void 
-rootfs_select() {
-    int current = get_rootfs_current();
-    int buddy = get_rootfs_buddy(current);
-    int rootfs = current;
-    int error;
-    int state;
-    char *statestring;
-    
-    println("current rootfs is %d", current);
-    println("buddy rootfs is %d", buddy);
-    
-    /*
-    * try current rootfs
-    *   if is rootfs0, state is ok
-    */
-    state = get_rootfs_state(rootfs);
-    switch(state) {
-    case AT_ROOTFS_OK: /* down */
-    case AT_ROOTFS_VERFY:
-        error = get_rootfs_error(rootfs);
-        
-        if (error < 3) {
-            /*
-            * try again
-            */
-            println("current rootfs:%d state:%c error:%d, go on", 
-                rootfs,
-                state,
-                error);
-            
-            goto start_up;
-        } else {
-            set_rootfs_state(rootfs, AT_ROOTFS_FAIL);
-
-            println("current rootfs:%d state:%c error:%d, set state to failed and try buddy", 
-                rootfs,
-                state,
-                error);
-            /*
-            * max error, try buddy
-            */            
-            goto try_buddy;
-        }
-    case AT_ROOTFS_FAIL:
-        println("current rootfs is failed(%d), try buddy", error);
-        
-        goto try_buddy;
-    default:
-        /*
-        * fix state to fail, try buddy
-        */
-        set_rootfs_state(rootfs, AT_ROOTFS_FAIL);
-        println("current rootfs state is unknow(%d), reset to failed and try buddy", state);
-        
-        goto try_buddy;
-    }
-
-try_buddy:
-    rootfs = buddy;
-    state = get_rootfs_state(rootfs);
-    switch(state) {
-    case AT_ROOTFS_OK: /* down */
-    case AT_ROOTFS_VERFY:
-        error = get_rootfs_error(rootfs);        
-        if (error < 3) {
-            /*
-            * try again
-            */
-            println("buddy rootfs:%d state:%c error:%d, go on", 
-                rootfs,
-                state,
-                error);
-        } else {
-            /*
-            * max error, try rootfs0
-            */
-            rootfs = 0;
-            set_rootfs_state(rootfs, AT_ROOTFS_FAIL);
-
-            println("buddy rootfs:%d state:%c error:%d, set state to failed and try rootfs0",
-                rootfs,
-                state,
-                error);
-        }
-
-        break;
-    case AT_ROOTFS_FAIL:
-        rootfs = 0;
-        println("buddy rootfs is failed(%d), try rootfs0", error);
-        break;
-    default:
-        /*
-        * fix state to fail, try buddy
-        */
-        set_rootfs_state(rootfs, AT_ROOTFS_FAIL);
-        rootfs = 0;
-        
-        println("buddy rootfs state is unknow(%d), reset to failed and try rootfs0", state);
-        
-        break;
-    }
-
-start_up:
-    set_rootfs_current(rootfs);
-    add_rootfs_error(rootfs);
-    change_bootargs(rootfs);
-    env_crc_update();
-    saveenv();
-}
-
-#endif
-
 void env_relocate (void)
 {
 #ifndef CONFIG_RELOC_FIXUP_WORKS
@@ -703,7 +259,6 @@ void env_relocate (void)
 #endif
 
 #ifdef ENV_IS_EMBEDDED
-    println("ENV_IS_EMBEDDED...");
 	/*
 	 * The environment buffer is embedded with the text segment,
 	 * just relocate the environment pointer
@@ -713,7 +268,6 @@ void env_relocate (void)
 #endif
 	DEBUGF ("%s[%d] embedded ENV at %p\n", __FUNCTION__,__LINE__,env_ptr);
 #else
-    println("ENV_IS_NOT_EMBEDDED...");
 	/*
 	 * We must allocate a buffer for the environment
 	 */
@@ -759,8 +313,7 @@ void env_relocate (void)
 	gd->env_addr = (ulong)&(env_ptr->data);
 
 #ifdef AUTELAN
-    rootfs_try_init();
-    rootfs_select();
+    at_boot();
 #endif
 
 #ifdef CONFIG_AMIGAONEG3SE

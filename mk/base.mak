@@ -34,6 +34,7 @@ CFG_HI_BASE_ENV+=" COMMON_UNF_INCLUDE COMMON_API_INCLUDE COMMON_DRV_INCLUDE "
 #=============PUB_DIR======================================================================
 ROOTBOX_DIR=${PUB_DIR}/rootbox
 ROOTFS_DATA_DIR=${PUB_DIR}/rootfs_data
+ROOTFS_CONFIG_DIR=${PUB_DIR}/rootfs_config
 IMAGE_DIR=${PUB_DIR}/image
 INCLUDE_DIR=${PUB_DIR}/include
 LIB_DIR=${PUB_DIR}/lib

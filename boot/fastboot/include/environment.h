@@ -119,10 +119,6 @@
 
 #include "compiler.h"
 
-#ifdef AUTELAN
-#include "../common/bootm.h"
-#endif
-
 #ifdef CONFIG_SYS_REDUNDAND_ENVIRONMENT
 # define ENV_HEADER_SIZE	(sizeof(uint32_t) + 1)
 #else
@@ -130,14 +126,14 @@
 #endif
 
 #ifdef AUTELAN
-#define ENV_SIZE (CONFIG_ENV_SIZE - ENV_HEADER_SIZE - (AT_ENV_LINE_SIZE*AT_ENV_COUNT))
+#define ENV_SIZE (CONFIG_ENV_SIZE - ENV_HEADER_SIZE - AT_ENV_SIZE)
 #else
 #define ENV_SIZE (CONFIG_ENV_SIZE - ENV_HEADER_SIZE)
 #endif
 
 typedef	struct environment_s {
 #ifdef AUTELAN
-    unsigned char   atenv[AT_ENV_COUNT][AT_ENV_LINE_SIZE];
+    unsigned char env[AT_ENV_SIZE];
 #endif
 
 	uint32_t	crc;		/* CRC32 over data bytes	*/
