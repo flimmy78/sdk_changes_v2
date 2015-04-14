@@ -1,0 +1,7 @@
+#+++++++++++++++++++++++++++++++++++++++++++++++++++
+#--------------------------------
+config HI_GPS_SUPPORT
+	bool "GPS Support"
+	default y 
+	help
+	  If you want to analyse gps, Say Y here.

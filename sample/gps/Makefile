@@ -14,22 +14,22 @@ endif
 
 ################################################################################
 image=
-ifeq ($(CFG_HI_3G_SUPPORT),y)
-image=3g_sample
+ifeq ($(CFG_HI_GPS_SUPPORT),y)
+image=rgps
 endif
 
 ################################################################################
 
 all:$(image) install
 
-3g_sample: 3g_sample.c 
-	@$(CC) -static -o $@ $^ -I$(INCLUDE_DIR) -L$(STATIC_LIB_DIR) -lhi_3g -lhi_common $(LIB) -lpthread
+$(image) : rgps.c
+	@$(CC) -static -o $@ $^ -lpthread
 	@$(STRIP) $@
 	
 clean:
 	-@rm -f $(image)
 
 install:
-	cp 3g_sample $(ROOTBOX_DIR)/usr/sbin
+	cp rgps $(ROOTBOX_DIR)/usr/sbin
 uninstall:
 
