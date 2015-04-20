@@ -61,6 +61,10 @@ ifeq ($(CFG_HI_GPS_SUPPORT),y)
 objects += gps
 endif
 
+ifeq ($(CFG_HI_LED_SUPPORT),y)
+objects += led
+endif
+
 ifeq ($(CFG_HI_GPU),y)
 objects += gpu 
 endif

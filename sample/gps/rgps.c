@@ -68,30 +68,7 @@ int print_timestr(char *str)
 
 	return 0;
 }
-int PopenFile (char *cmd_str, char *str, int len)
-{
-	FILE *fp=NULL; 
 
-	if (cmd_str == NULL||str == NULL)
-		return -1;
-
-	memset(str, 0, len);		   
-	fp = popen(cmd_str, "r");  
-	//	printf("%s\n", cmd_str);
-	if (fp) {	   
-		fgets(str, len, fp);	   
-		if (str[strlen(str)-1] == '\n')	{		   
-			str[strlen(str)-1] = '\0';	   
-		}	   
-		pclose(fp); 	   
-		return 0;    
-	} else {	   
-		perror("popen");	   
-		str = NULL;
-		return -1;   
-	}
-	return 0;
-}
 void print_gpsinfo(char *buf)
 {
 	char ReceivingF = 0;
@@ -486,13 +463,13 @@ int main(int argc, char *argv[])
 	int fd, nread, i = 0, j = 0, status = 0;
 	char buf[RD_SIZE];
 	char buf1[RD_SIZE] = {0};
-	char *dev_path = (char*)0;
+	char *dev_path = "/dev/ttyAMA2";
 	char *dev_data = "/tmp/.gps.log";
 	char *logfile = (char*)0;
 	struct timeval tv_begin, tv_end;
 	int tv_intval;
 	
-	while ((opt = getopt(argc,argv,"t:d:l:p:u:h")) != -1) {
+	while ((opt = getopt(argc,argv,"t:d:l:p:h")) != -1) {
 		switch (opt) {
 			case 'h':
 				printf("rgps [-d /dev/ttyAMA2] [-t interval] [-l logpath]\n");

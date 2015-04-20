@@ -1,0 +1,7 @@
+#+++++++++++++++++++++++++++++++++++++++++++++++++++
+#--------------------------------
+config HI_LED_SUPPORT
+	bool "LED Control Support"
+	default y 
+	help
+	  If you want to compile led_main, Say Y here.
