@@ -57,6 +57,7 @@ ifeq ($(CFG_HI_3G_SUPPORT),y)
 objects += 3g
 endif
 
+#AUTELAN start
 ifeq ($(CFG_HI_GPS_SUPPORT),y)
 objects += gps
 endif
@@ -64,6 +65,11 @@ endif
 ifeq ($(CFG_HI_LED_SUPPORT),y)
 objects += led
 endif
+
+ifeq ($(CFG_HI_ACC_SUPPORT),y)
+objects += acc
+endif
+#AUTELAN end
 
 ifeq ($(CFG_HI_GPU),y)
 objects += gpu 
