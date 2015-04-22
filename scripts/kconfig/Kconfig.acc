@@ -1,7 +1,7 @@
 #+++++++++++++++++++++++++++++++++++++++++++++++++++
 #--------------------------------
-config HI_LED_SUPPORT
-	bool "LED Monitor Support"
+config HI_ACC_SUPPORT
+	bool "ACC Monitor Support"
 	default y 
 	help
-	  If you want to compile led_main, Say Y here.
+	  If you want to compile acc_main, Say Y here.

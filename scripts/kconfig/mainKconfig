@@ -32,8 +32,11 @@ source "scripts/kconfig/Kconfig.wifi"
 source "scripts/kconfig/Kconfig.hifat"
 source "scripts/kconfig/Kconfig.ntfs"
 source "scripts/kconfig/Kconfig.3g"
+#AUTELAN start
 source "scripts/kconfig/Kconfig.gps"
 source "scripts/kconfig/Kconfig.led"
+source "scripts/kconfig/Kconfig.acc"
+#AUTELAN end
 source "scripts/kconfig/Kconfig.alsa"
 source "scripts/kconfig/Kconfig.voip"
 source "scripts/kconfig/Kconfig.hacodec"

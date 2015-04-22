@@ -600,8 +600,8 @@ int main(int argc, char *argv[])
 			case 't':
 				intval = strtoul(optarg, NULL, 10);
 				if ((intval < 1)||(intval > 60)) {
-				printf("		  -t 5 (check interval 1~60 sec)\n");
-				intval = 5;
+					printf("		  -t 5 (check interval 1~60 sec)\n");
+					intval = 5;
 				}
 				break;
 			default:
