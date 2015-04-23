@@ -193,11 +193,11 @@ void *monitor_vcc(void *arg)
 
 				if (0 == vcc.level) {
 					if (vcc.voltage < 17) vcc.level = 10;
-					if (vcc.voltage >= 17) vcc.level = 20;
+					if (vcc.voltage >= 17) vcc.level = 22;
 				}
 				if (vcc.voltage < vcc.level) {
 					report_vcc();
-					printf("Warning: level:%d, voltage:%f, shutdown the whole device\n", vcc.level, vcc.voltage);
+					printf("Warning: lowlevel:%d, voltage:%f, ShutDown Device Immediately.\n", vcc.level, vcc.voltage);
 					set_offdelay_shutdown();
 				}
 				report_vcc();
