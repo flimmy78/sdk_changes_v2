@@ -25,7 +25,7 @@ OBJS = led_main.o
 #===============================================================================
 .PHONY: all clean install uninstall
 
-all:$(APP)
+all:$(APP) install
 
 %.o: %.c
 	$(AT)$(CC) $(CFLAGS) -c -o $@ $^
