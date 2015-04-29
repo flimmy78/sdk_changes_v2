@@ -26,9 +26,13 @@
 #define ACC_OPEN  0
 #define ACC_CLOSE 1
 
-#define ACC_MONITOR "acc_mon"
-#define OFF_DELAY   "offdelay"
+#define NAME_ACC_MONITOR "acc_mon"
+#define NAME_OFF_DELAY   "offdelay"
 #define GET_VOLTAGE_RAW "voltage_show | awk '{if(NR==2){print $3}}'"
+
+#define LOW_RATE 10
+#define HIGH_RATE 22
+#define OFF_DELAY 10
 
 int off_time = 600;
 unsigned int acc_monitor = 0;
@@ -100,7 +104,7 @@ void set_offdelay_shutdown(void)
 {
 	struct gpio *gpio1;
 
-	gpio1 = getgpio_byname(OFF_DELAY);
+	gpio1 = getgpio_byname(NAME_OFF_DELAY);
 	if (NULL != gpio1) {
 		set_gpio_bit(gpio1->number, HI_FALSE);
 	}
@@ -129,7 +133,7 @@ void monitor_acc(int intval)
 	int duration = 0;
 
 #ifdef HI_UNF_GPIO
-	gpio = getgpio_byname(ACC_MONITOR);
+	gpio = getgpio_byname(NAME_ACC_MONITOR);
 	if (NULL != gpio) {
 		value = get_gpio_bit(gpio->number);
 
@@ -138,11 +142,13 @@ void monitor_acc(int intval)
 		} else if (ACC_CLOSE == value) {
 			acc_monitor ++;
 		} else {
-			printf("warning: %s, str:%s, gpio:%d, value:%d\n", __func__, ACC_MONITOR, gpio->number, value);
+			printf("warning: %s, str:%s, gpio:%d, value:%d\n", __func__, NAME_ACC_MONITOR, gpio->number, value);
 		}
 	}
 	duration = acc_monitor * intval;
 	if (duration >= off_time) {
+		system("/usr/sbin/pre_offdelay &");
+		sleep(OFF_DELAY);
 		set_offdelay_shutdown();
 	}
 	report_acc(value, duration);
@@ -192,8 +198,8 @@ void *monitor_vcc(void *arg)
 				//printf("voltage is %s, %f(v)\n", str, vcc.voltage);
 
 				if (0 == vcc.level) {
-					if (vcc.voltage < 17) vcc.level = 10;
-					if (vcc.voltage >= 17) vcc.level = 22;
+					if (vcc.voltage < 17) vcc.level = LOW_RATE;
+					if (vcc.voltage >= 17) vcc.level = HIGH_RATE;
 				}
 				if (vcc.voltage < vcc.level) {
 					report_vcc();
