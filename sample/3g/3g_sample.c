@@ -212,9 +212,7 @@ int main(int argc, char *argv[])
 
 	printf("[%s],[%s],[%s],[%s]\n", telephone, account, password, apn);
 /************************** test1: scan cards   *******************************/
-	printf("***************************************************\n");
 	printf("Test 1: Scan cards\n");
-	printf("***************************************************\n\n");
 
 	card = (HI_3G_CARD_S *)malloc(sizeof(HI_3G_CARD_S) * max_card_num);
 	if (card == NULL) {
@@ -229,15 +227,10 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	printf("***************************************************\n");
-	printf("Test 1: Scan cards Pass!\n");
-	printf("***************************************************\n\n");
 
 /************************** test2: init card   ********************************/
 
-	printf("***************************************************\n");
 	printf("Test 2: Init card\n");
-	printf("***************************************************\n\n");
 
 	/* for HUAWEI E303s, should try several times, make sure init card ok*/
 	do {
@@ -253,15 +246,9 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	printf("***************************************************\n");
-	printf("Test 2: Init card Pass!\n");
-	printf("***************************************************\n\n");
-
 /************************** test3: get card status ****************************/
 
-	printf("***************************************************\n");
 	printf("Test 3: Get card status\n");
-	printf("***************************************************\n\n");
 
 	ret = HI_3G_GetCardStatus(card, &status);
 	if (ret != 0) {
@@ -278,14 +265,10 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	printf("***************************************************\n");
-	printf("Test 3: Get card status Pass!\n");
-	printf("***************************************************\n\n");
 
 /************************** test4: register card ******************************/
-	printf("***************************************************\n");
+
 	printf("Test 4: Register card\n");
-	printf("***************************************************\n\n");
 	/* Test 4 only supports WCDMA CARDS, CDMA2000 not supports. */
 	if (support_cmd == CMD_SUPPORT_LITE) {
 		printf("CDMA cards do not need Test 4: Register card, ignore.\n");
@@ -456,9 +439,8 @@ TEST4_EXIT:
 		free(currentoperator);
 	currentoperator = NULL;
 
-	printf("***************************************************\n");
+/************************** Test 5: Set PDP ******************************/
 	printf("Test 5: Set PDP\n");
-	printf("***************************************************\n\n");
 	/* Test 5 only supports WCDMA CARDS, CDMA2000 not supports. */
 	if (support_cmd == CMD_SUPPORT_LITE) {
 		printf("CDMA cards do not need Test 5: Set PDP, ignore.\n");
@@ -552,10 +534,6 @@ TEST4_EXIT:
 			 pdp->adcomp, 
 			 pdp->ahcomp);
 
-	printf("***************************************************\n");
-	printf("Test 5: Set PDP Pass!\n");
-	printf("***************************************************\n\n");
-
 	free(pdp);
 	pdp = NULL;
 TEST5_EXIT:
@@ -563,9 +541,8 @@ TEST5_EXIT:
 		free(currentoperator);
 	currentoperator = NULL;
 	
-	printf("***************************************************\n");
+/**************************Test 6: Get card quality******************************/
 	printf("Test 6: Get card quality\n");
-	printf("***************************************************\n\n");
 
 	ret = HI_3G_GetQuality(card, &issr, &ber);
 	if (ret != 0)
@@ -575,21 +552,16 @@ TEST5_EXIT:
 			"	issr: %d,"
 			"	ber: %d\n",
 			issr, ber);
-		printf("***************************************************\n");
-		printf("Test 6: Get card quality Pass!\n");
-		printf("***************************************************\n\n");
 	}
 
-	printf("***************************************************\n");
-	printf("Test 7: Connect card\n");
-	printf("***************************************************\n\n");
-
+/************************** Test 7: Connect card ******************************/
 	/* try several times, make sure to connect ok */
 	ix = 0;
 	do {
 		ret = HI_3G_ConnectCard(card, account, password, 
 			      telephone, 0, argoption);
 		if (ret == 0)
+		printf("Test 7: Connect card Pass!\n");
 		break;
 		sleep(1);
 	} while (++ix < MAX_CMD_RETRIES);
@@ -600,15 +572,13 @@ TEST5_EXIT:
 		return -1;
 	}
 
-	printf("***************************************************\n");
-	printf("Test 7: Connect card Pass!\n");
-	printf("***************************************************\n\n");
 
+/*
 	printf("***************************************************\n");
 	printf("Test 8: Get card dataflow\n");
 	printf("***************************************************\n\n");
 	/* Test 8 only supports WCDMA CARDS, CDMA2000 not supports. */
-	if (support_cmd == CMD_SUPPORT_LITE) {
+/*	if (support_cmd == CMD_SUPPORT_LITE) {
 		printf("CDMA cards no need Test 8: Get card dataflow, ignore.\n");
 		goto TEST8_EXIT;
 	}
@@ -645,106 +615,106 @@ TEST5_EXIT:
 	dataflow = NULL;
 
 TEST8_EXIT:
-	printf("***************************************************\n");
-	printf("Test 9: Disconnect card\n");
-	printf("***************************************************\n\n");
+*/
+/*	printf("***************************************************\n");
+*	printf("Test 9: Disconnect card\n");
+*	printf("***************************************************\n\n");
+*
+*	ret = HI_3G_DisConnectCard(card);
+*	if (ret != 0) {
+*		printf("disconnect card failed(ret=%d)!\n", ret);
+*		free(card);
+*		card = NULL;
+*		return -1;
+*	}
+*	printf("***************************************************\n");
+*	printf("Test 9: Disconnect card Pass!\n");
+*	printf("***************************************************\n\n");
+*/
+/*			printf("***************************************************\n");
+			printf("Test 10: reconnect card\n");
+			printf("***************************************************\n\n");
+			/* try several times, make sure to connect ok */
+/*			ix = 0;
+			do {
+				ret = HI_3G_ConnectCard(card, account, password, 
+					      telephone, 0, argoption);
+				if (ret == 0)
+				printf("***************************************************\n");
+				printf("Test 10: reconnect card Pass!\n");
+				printf("***************************************************\n\n");
+				break;
+				sleep(1);
+			} while (++ix < MAX_CMD_RETRIES);
+				if (ix >= MAX_CMD_RETRIES) {
+					printf("connect card failed(ret=%d)!\n", ret);
+					free(card);
+					card = NULL;
+//					return -1;
+//					}
+			printf("***************************************************\n");
+			printf("Test 11: DeInit card\n");
+			printf("***************************************************\n\n");
 
-	ret = HI_3G_DisConnectCard(card);
-	if (ret != 0) {
-		printf("disconnect card failed(ret=%d)!\n", ret);
-		free(card);
-		card = NULL;
-		return -1;
-	}
-	printf("***************************************************\n");
-	printf("Test 9: Disconnect card Pass!\n");
-	printf("***************************************************\n\n");
+			ret = HI_3G_DeInitCard(card);
+			if (ret != 0) {
+				printf("deinit card failed(ret=%d)!\n", ret);
+				free(card);
+				card = NULL;
+				return -1;
+			}
+			printf("***************************************************\n");
+			printf("Test 11: DeInit card Pass!\n");
+			printf("***************************************************\n\n");
 
-	printf("***************************************************\n");
-	printf("Test 10: reconnect card\n");
-	printf("***************************************************\n\n");
-	/* try several times, make sure to connect ok */
-	ix = 0;
-	do {
-		ret = HI_3G_ConnectCard(card, account, password, 
-			      telephone, 0, argoption);
-		if (ret == 0)
-		break;
-		sleep(1);
-	} while (++ix < MAX_CMD_RETRIES);
-	if (ix >= MAX_CMD_RETRIES) {
-		printf("connect card failed(ret=%d)!\n", ret);
-		free(card);
-		card = NULL;
-		return -1;
-	}
-	printf("***************************************************\n");
-	printf("Test 10: reconnect card Pass!\n");
-	printf("***************************************************\n\n");
+			printf("***************************************************\n");
+			printf("Test 12: ReInit card\n");
+			printf("***************************************************\n\n");
+*/			/* for HUAWEI E303s, should try several times, make sure init card ok*/
+/*			do {
+				ret = HI_3G_InitCard(card);
+				if (ret == 0)
+					break;
+					sleep(1);
+				} while (++ix < MAX_CMD_RETRIES);
+				if (ix >= MAX_CMD_RETRIES) {
+					printf("init card failed(ret=%d)\n", ret);
+					free(card);
+					card = NULL;
+					return -1;
+			}
 
-	printf("***************************************************\n");
-	printf("Test 11: DeInit card\n");
-	printf("***************************************************\n\n");
+			printf("***************************************************\n");
+			printf("Test 12: ReInit card Pass!\n");
+			printf("***************************************************\n\n");
 
-	ret = HI_3G_DeInitCard(card);
-	if (ret != 0) {
-		printf("deinit card failed(ret=%d)!\n", ret);
-		free(card);
-		card = NULL;
-		return -1;
-	}
+			printf("***************************************************\n");
+			printf("Test 13: ReConnect card\n");
+			printf("***************************************************\n\n");
+*/
+			/* try several times, make sure to connect ok */
+/*			ix = 0;
+			do {
+				ret = HI_3G_ConnectCard(card, account, password, 
+					      telephone, 0, argoption);
+				if (ret == 0)
+					break;
+					sleep(1);
+				} while (++ix < MAX_CMD_RETRIES);
+				if (ix >= MAX_CMD_RETRIES) {
+					printf("connect card failed(ret=%d)!\n", ret);
+					free(card);
+					card = NULL;
+					return -1;
+			}
 
-	printf("***************************************************\n");
-	printf("Test 11: DeInit card Pass!\n");
-	printf("***************************************************\n\n");
-
-	printf("***************************************************\n");
-	printf("Test 12: ReInit card\n");
-	printf("***************************************************\n\n");
-
-	/* for HUAWEI E303s, should try several times, make sure init card ok*/
-	do {
-		ret = HI_3G_InitCard(card);
-		if (ret == 0)
-			break;
-		sleep(1);
-	} while (++ix < MAX_CMD_RETRIES);
-	if (ix >= MAX_CMD_RETRIES) {
-		printf("init card failed(ret=%d)\n", ret);
-		free(card);
-		card = NULL;
-		return -1;
-	}
-
-	printf("***************************************************\n");
-	printf("Test 12: ReInit card Pass!\n");
-	printf("***************************************************\n\n");
-
-	printf("***************************************************\n");
-	printf("Test 13: ReConnect card\n");
-	printf("***************************************************\n\n");
-
-	/* try several times, make sure to connect ok */
-	ix = 0;
-	do {
-		ret = HI_3G_ConnectCard(card, account, password, 
-			      telephone, 0, argoption);
-		if (ret == 0)
-		break;
-		sleep(1);
-	} while (++ix < MAX_CMD_RETRIES);
-	if (ix >= MAX_CMD_RETRIES) {
-		printf("connect card failed(ret=%d)!\n", ret);
-		free(card);
-		card = NULL;
-		return -1;
-	}
-
-	printf("***************************************************\n");
-	printf("Test 13: ReConnect card Pass!\n");
-	printf("***************************************************\n\n");
-
-	free(card);
-	card = NULL;
-	return 0;
+			printf("***************************************************\n");
+			printf("Test 13: ReConnect card Pass!\n");
+			printf("***************************************************\n\n");
+				
+			free(card);
+			card = NULL;
+			return 0;
+			}
+*/
 }
