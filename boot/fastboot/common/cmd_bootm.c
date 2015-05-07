@@ -222,7 +222,7 @@ static int bootm_start(cmd_tbl_t *cmdtp, int flag, int argc, char *argv[])
 	void		*os_hdr;
 	int		ret;
 	
-#ifdef AUTELAN
+#if defined(AUTELAN) && 0
     at_reg_write(dog_enable);
 #endif
 
