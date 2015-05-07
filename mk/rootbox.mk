@@ -40,7 +40,10 @@ ifeq ($(CFG_HI_LOADER_APPLOADER),y)
 endif
 	-$(AT)cp -rf $(EXTERN_LIB_DIR)/*.so*   $(ROOTBOX_DIR)/usr/lib
 	#AUTELAN
-	rm -f $(ROOTBOX_DIR)/usr/lib/libssl.so.1.0.0 $(ROOTBOX_DIR)/usr/lib/libcrypto.so.1.0.0
+	rm -f $(ROOTBOX_DIR)/usr/lib/libssl* $(ROOTBOX_DIR)/usr/lib/libcrypto*
+	cp -f $(ROOTFS_DIR)/usr/lib/libssl* $(ROOTBOX_DIR)/usr/lib/
+	cp -f $(ROOTFS_DIR)/usr/lib/libcrypto* $(ROOTBOX_DIR)/usr/lib/
+
 	-$(AT)cp -rf $(BIN_DIR)   $(ROOTBOX_DIR)/usr/
 	-$(AT)mknod $(ROOTBOX_DIR)/dev/console c 5 1
 	-$(AT)mknod $(ROOTBOX_DIR)/dev/ttyAMA0 c 204 64
