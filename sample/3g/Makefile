@@ -28,14 +28,14 @@ endif
 
 image=
 ifeq ($(CFG_HI_3G_SUPPORT),y)
-image=3g_sample
+image=ppp_dial
 endif
 
 ################################################################################
 
 all:$(image) install
 
-3g_sample: 3g_sample.c
+ppp_dial: ppp_dial.c
 	@$(CC) -static -o $@ $^ -I$(INCLUDE_DIR) -L$(STATIC_LIB_DIR) -lhi_3g -lhi_common $(LIB) -lpthread
 	@$(STRIP) $@
 
@@ -52,7 +52,7 @@ clean:
 #add end by autelan
 
 install:
-	cp 3g_sample $(ROOTBOX_DIR)/usr/sbin
+	cp ppp_dial $(ROOTBOX_DIR)/usr/sbin
 #add by autelan
 	cp at_ttyUSB0 $(ROOTBOX_DIR)/usr/sbin
 	cp at_ttyUSB1 $(ROOTBOX_DIR)/usr/sbin
