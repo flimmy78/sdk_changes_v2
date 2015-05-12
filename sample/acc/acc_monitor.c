@@ -34,7 +34,7 @@
 #define HIGH_RATE 22
 #define OFF_DELAY 10
 
-int off_time = 600;
+int off_time = 900;
 unsigned int acc_monitor = 0;
 pthread_mutex_t mutex;
 static FILE *logfp = NULL;
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
 				printf("          -h (get help)\n");
 				printf("          -t 5 (check interval 1~60 sec)\n");
 				printf("          -v 10 (vcc report interval 1~60 sec)\n");
-				printf("          -d 600 (offdelay time 1~1200 sec)\n");
+				printf("          -d 900 (offdelay time 1~1200 sec)\n");
 				printf("          -l /tmp/vcc.log (log file for vcc)\n");
 				printf("          -p /tmp/.acc/ (acc'status path)\n");
 				return 0;				

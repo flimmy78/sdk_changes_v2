@@ -18,6 +18,7 @@
 #define GPIO_DIR  0x400
 #define OFFDELAY  2
 #define ACC_REG   3
+#define TIMEOUT   1200
 
 struct timer_list acc_timer;
 static int acc_flag = 0;
@@ -69,7 +70,7 @@ void check_acc_value(void)
 	} else if (val == 1) {
 		acc_flag = 1;
 		acc_count ++;
-		if ((acc_count >= 1200)&&(1 == acc_flag)) {
+		if ((acc_count >= TIMEOUT)&&(1 == acc_flag)) {
 
 			set_gpio_value((GPIO5_REG_BASE + GPIO_DATA), OFFDELAY, 0);
 			kernel_restart(NULL);
