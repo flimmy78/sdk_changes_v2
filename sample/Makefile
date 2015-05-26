@@ -53,9 +53,9 @@ ifeq ($(CFG_HI_WIFI_SUPPORT),y)
 objects += wifi
 endif
 
-ifeq ($(CFG_HI_3G_SUPPORT),y)
-objects += 3g
-endif
+#ifeq ($(CFG_HI_3G_SUPPORT),y)
+#objects += 3g
+#endif
 
 #AUTELAN start
 ifeq ($(CFG_HI_GPS_SUPPORT),y)
