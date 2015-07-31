@@ -942,7 +942,8 @@ static const struct usb_device_id option_ids[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0197, 0xff, 0xff, 0xff) },
 	//{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0199, 0xff, 0xff, 0xff), /* ZTE MF820S */
 	//  .driver_info = (kernel_ulong_t)&net_intf1_blacklist },
-	{ USB_DEVICE(0x19d2, 0x0199) },//AUTELAN
+	{ USB_DEVICE(0x19d2, 0x0199) },//AUTELAN for ME3760
+	{ USB_DEVICE(0x1435, 0xd111) },//AUTELAN for DM11-1
 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0200, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0201, 0xff, 0xff, 0xff) },
 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0254, 0xff, 0xff, 0xff) },
