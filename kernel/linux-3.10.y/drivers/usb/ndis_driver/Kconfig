@@ -1,0 +1,17 @@
+menu "NDIS_DRIVER support"
+
+	config NDIS_DRIVER
+
+	tristate "NDIS_DRIVER support"
+
+	---help---
+
+	NDIS_DRIVER use gpio as ir input .
+
+	If you want NDIS_DRIVER support, you should say Y here and also to the
+
+	specific driver for your bus adapter(s) below.
+
+	This NDIS_DRIVER support can be built as a module.
+
+endmenu

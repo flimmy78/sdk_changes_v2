@@ -314,6 +314,11 @@ static void option_instat_callback(struct urb *urb);
  */
 #define LONGCHEER_VENDOR_ID			0x1c9e
 
+/************ add by guoshuai for longsung U8300C ***************/
+#define LONGSUNG_VENDOR_ID			0x1c9e
+#define LONGSUNG_U8300_PRODUCT_ID		0x9b05
+/****************************************************************/
+
 /* 4G Systems products */
 /* This is the 4G XS Stick W14 a.k.a. Mobilcom Debitel Surf-Stick *
  * It seems to contain a Qualcomm QSC6240/6290 chipset            */
@@ -583,6 +588,9 @@ static const struct usb_device_id option_ids[] = {
 		.driver_info = (kernel_ulong_t) &net_intf1_blacklist },
 	{ USB_DEVICE_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, HUAWEI_PRODUCT_K4605, 0xff, 0xff, 0xff),
 		.driver_info = (kernel_ulong_t) &huawei_cdc12_blacklist },
+	/**************add by guoshuai for longsung U8300C******************/
+	{ USB_DEVICE(LONGSUNG_VENDOR_ID, LONGSUNG_U8300_PRODUCT_ID) },
+	/********************************************************************/
 	{ USB_VENDOR_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0xff, 0xff, 0xff) },
 	{ USB_VENDOR_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0xff, 0x01, 0x01) },
 	{ USB_VENDOR_AND_INTERFACE_INFO(HUAWEI_VENDOR_ID, 0xff, 0x01, 0x02) },
@@ -1429,6 +1437,15 @@ static int option_probe(struct usb_serial *serial,
 	if (iface_desc->bInterfaceClass == 0x08)
 		return -ENODEV;
 
+/***********add by guoshuai for longsung U8300C********************************/
+	if (serial->dev->descriptor.idVendor == LONGSUNG_VENDOR_ID && 
+		serial->dev->descriptor.idProduct == LONGSUNG_U8300_PRODUCT_ID && 
+		serial->interface->cur_altsetting->desc.bInterfaceNumber == 4) 
+	{
+		printk(KERN_INFO "Discover the 4th interface for U8300 NDIS\n");
+		return -ENODEV;
+	}
+/************************************************************************/
 	/*
 	 * Don't bind reserved interfaces (like network ones) which often have
 	 * the same class/subclass/protocol as the serial interfaces.  Look at
