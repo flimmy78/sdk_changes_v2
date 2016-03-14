@@ -105,7 +105,7 @@ void print_gpsinfo(char *buf)
 	}
 	while (ReceivingF)
 	{                
-		if (buf == NULL) {
+		if (*buf == NULL) {
 			return;
 		}
 		if (*buf == ',') {
@@ -116,7 +116,6 @@ void print_gpsinfo(char *buf)
 		if (*buf == '*') {			//¨º?¦Ì??¨¢¨º?¡À¨º??
 			if ((Command == 1)&&(flag_GPGGA == 0)) {
 				print_timestr(GPS_time);
-				flag_GPGGA=1;
 
 				rgps.gps_satellite = atoi(GPS_sv);
 				memset(rgps.gps_Lng, 0, sizeof(rgps.gps_Lng));
@@ -125,6 +124,12 @@ void print_gpsinfo(char *buf)
 				memcpy(rgps.gps_Lat, GPS_wd, strlen(GPS_wd));
 				memset(rgps.gps_Elevation, 0, sizeof(rgps.gps_Elevation));
 				memcpy(rgps.gps_Elevation, GPS_alt, strlen(GPS_alt));
+			
+				if (((rgps.east_west != 'E')&&(rgps.east_west != 'W'))||((rgps.north_south != 'N')&&(rgps.north_south != 'S'))) {
+					flag_GPGGA = 0;
+				} else {
+					flag_GPGGA = 1;
+				}
 			}
 			if (Command == 2&&(flag_GPRMC == 0)) {
 				flag_GPRMC=1;
